@@ -138,7 +138,7 @@ export class GenerateRandomNumberComponent implements OnInit, AfterViewInit {
         loaded                     : this.loaded,
         generateNumberButtonClicked: this.generateNumberButtonClicked
       });
-    }, 7500);
+    }, 6500);
   }
 
 }
