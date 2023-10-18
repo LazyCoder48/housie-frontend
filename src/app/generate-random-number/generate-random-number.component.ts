@@ -126,7 +126,7 @@ export class GenerateRandomNumberComponent implements OnInit, AfterViewInit {
       announceNumberInHindi.text  = announcementTextHindi;
       window.speechSynthesis.speak(announceNumberInHindi);
 
-    }, 500);
+    }, 1000);
 
     setTimeout(() => {
       this.loaded                      = true;
@@ -138,7 +138,7 @@ export class GenerateRandomNumberComponent implements OnInit, AfterViewInit {
         loaded                     : this.loaded,
         generateNumberButtonClicked: this.generateNumberButtonClicked
       });
-    }, 6500);
+    }, 7000);
   }
 
 }
