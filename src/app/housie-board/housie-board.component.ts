@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CheckNumbersComponent } from '../check-numbers/check-numbers.component';
+import { GenerateRandomNumberComponent } from '../generate-random-number/generate-random-number.component';
 
 @Component({
   selector   : 'app-housie-board',
@@ -10,23 +11,21 @@ import { CheckNumbersComponent } from '../check-numbers/check-numbers.component'
 })
 export class HousieBoardComponent implements OnInit, AfterViewInit {
 
-  numbers: any[]                    = [];
-  housieNumber: number | null       = null;
-  housieNumbersList: number[]       = [];
-  voicesList: any                   = [];
-  loaded: boolean                   = false;
-  IndianLanguages: any              = [];
-  selectedLanguageIndex: number     = 0;
-  ref: DynamicDialogRef | undefined = undefined;
+  numbers: any[]                                         = [];
+  housieNumber: number                                   = 0;
+  housieNumbersList: number[]                            = [];
+  voicesList: any                                        = [];
+  loaded: boolean                                        = false;
+  // IndianLanguages: any                                   = [];
+  selectedLanguageIndex: number                          = 0;
+  ref: DynamicDialogRef | undefined                      = undefined;
+  generateRandomNumbersRef: DynamicDialogRef | undefined = undefined;
   @ViewChild('generateNumberButton', {static: false}) generateNumberButton: ElementRef | undefined;
 
   constructor(public dialogService: DialogService, public messageService: MessageService) {
-
   }
 
   ngAfterViewInit(): void {
-    const windowVoices = window.speechSynthesis.getVoices();
-    console.log(windowVoices);
     let loadingVoices = setInterval(() => {
       console.log('loading voices...');
       // if (windowVoices.length > 1) {
@@ -37,22 +36,22 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
       }
     }, 100);
 
-    setTimeout(() => {
-      console.log(this.voicesList);
-      let langIndex: number = 0;
-      this.voicesList.forEach((voice: any) => {
-        if (voice.lang.indexOf('IN') >= 0) {
-          this.IndianLanguages.push({
-            lang        : voice.lang,
-            name        : voice.name,
-            localService: voice.localService,
-            index       : langIndex
-          });
-        }
-        langIndex++;
-      });
-      this.loaded = true;
-    }, 2000);
+    // setTimeout(() => {
+    //   console.log(this.voicesList);
+    //   let langIndex: number = 0;
+    //   this.voicesList.forEach((voice: any) => {
+    //     if (voice.lang.indexOf('IN') >= 0) {
+    //       this.IndianLanguages.push({
+    //         lang        : voice.lang,
+    //         name        : voice.name,
+    //         localService: voice.localService,
+    //         index       : langIndex
+    //       });
+    //     }
+    //     langIndex++;
+    //   });
+    //   this.loaded = true;
+    // }, 2000);
   }
 
   ngOnInit(): void {
@@ -93,81 +92,55 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
   singleClickGenerateNumber(): void {
     if (!this.generateNumberButtonClicked) {
       this.generateNumberButtonClicked = true;
-      this.generateNumber();
+      // this.generateNumber();
+      this.generateRandomNumbersRef    = this.dialogService.open(GenerateRandomNumberComponent, {
+          header       : 'Generating Random Number!',
+          width        : '70%',
+          contentStyle : {overflow: 'auto'},
+          baseZIndex   : 10000,
+          maximizable  : false,
+          closable     : false,
+          closeOnEscape: false,
+          data         : {
+            housieNumbersList          : this.housieNumbersList,
+            markedNumbers              : this.markedNumbers,
+            loaded                     : this.loaded,
+            generateNumberButtonClicked: this.generateNumberButtonClicked
+          }
+        }
+      );
+
+      this.generateRandomNumbersRef.onClose.subscribe((data: any) => {
+        console.log('data on close', data);
+        if (data) {
+          this.housieNumber                = data.housieNumber;
+          this.housieNumbersList           = data.housieNumbersList;
+          this.markedNumbers               = data.markedNumbers;
+          this.loaded                      = data.loaded;
+          this.generateNumberButtonClicked = data.generateNumberButtonClicked;
+
+          this.updateMarkedNumbers();
+        }
+
+      });
+
     } else {
       console.log('Button is already clicked');
     }
   }
 
-  generateNumber() {
-    console.log(this.generateNumberButton?.nativeElement);
-    this.loaded               = false;
-    const randomIndex: number = Math.floor(Math.random() * this.housieNumbersList.length);
-
-    let displayRandomNumbers = setInterval(() => {
-      this.housieNumber = Math.floor(Math.random() * 90) + 1;
-    }, 50);
-
-    setTimeout(() => {
-
-      // initializing Speech Synthesis Utterance
-
-      let announceNumber: SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
-
-      this.housieNumber = this.housieNumbersList[randomIndex];
-      this.housieNumbersList.splice(randomIndex, 1);
-      this.numbers.forEach((row: any[]) => {
-        row.forEach((num: any) => {
-          if (num.number === this.housieNumber) {
-            num.selected = true;
-          }
-        });
+  updateMarkedNumbers(): void {
+    this.numbers.forEach((row: any[]) => {
+      row.forEach((num: any) => {
+        if (num.number === this.housieNumber) {
+          num.selected = true;
+        }
       });
-      clearInterval(displayRandomNumbers);
-      if (this.housieNumbersList.length === 0) {
-        this.loaded = false;
-      }
-      this.clickCount++;
-      let announcementText: string = '';
-      const splitNumbers: number[] = this.housieNumber.toString().split('').map(Number);
-      this.markedNumbers.push(this.housieNumber);
-      console.log(splitNumbers);
-      if (splitNumbers.length !== 2) {
-        announcementText += ' single digit ';
-      } else {
-        splitNumbers.forEach((num: number) => {
-          announcementText += ` ${num} `;
-        });
-      }
-      announcementText += `, ${this.housieNumber}`;
-      announceNumber.text = announcementText;
-      // announceNumber.rate = 0.90;
-      // voice is selected in the below line
-      // announceNumber.voice                         = this.voicesList[this.selectedLanguageIndex];
-      announceNumber.voice = this.voicesList[92];
-      window.speechSynthesis.speak(announceNumber);
-      announcementText = '';
-      if (splitNumbers.length !== 2) {
-        announcementText += ' sirf';
-      } else {
-        splitNumbers.forEach((num: number) => {
-          announcementText += ` ${num} `;
-        });
-      }
-      announcementText += `, ${this.housieNumber}`;
+    });
 
-
-      announceNumber.voice = this.voicesList[157];
-      announceNumber.text  = announcementText;
-      window.speechSynthesis.speak(announceNumber);
-
-    }, 500);
-
-    setTimeout(() => {
-      this.loaded                      = true;
-      this.generateNumberButtonClicked = false;
-    }, 7500);
+    // this.announcementOfNumber();
   }
+
 
   enableCheck: boolean     = true;
   showCheckDialog: boolean = false;
