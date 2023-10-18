@@ -1,0 +1,37 @@
+<p-card header="Housie" subheader="A game of luck and probability with numbered tickets." styleClass="w-full h-screen">
+  <ng-template pTemplate="header">
+
+    <!--<div class="flex flex-wrap align-items-center justify-content-center max-h-3rem">
+      <img alt="Card" [ngSrc]="'assets/images/Housie-16_9.jpeg'" height="540" width="960"/>
+    </div>-->
+  </ng-template>
+
+  <h4>Rules of the game</h4>
+  <ul>
+    <li>A caller is chosen to draw and announce numbers.</li>
+    <li>Players buy tickets with 15 random numbers on them.</li>
+    <li>The caller draws numbers from 1-90 randomly and announces them.</li>
+    <li>Players cross off announced numbers on their tickets.</li>
+    <li>Players can win small amount by claiming <strong>Fast Five</strong>, <strong>First, Second and Third
+      Lines</strong></li>
+    <li>The first player to cross off all numbers in a winning pattern shouts <strong>“Housie”</strong>. There might be
+      <strong>more than 1 Housie</strong> based on <em><u>(number of player/amount collected at the start of
+        game)</u></em>.
+    </li>
+    <li>The caller verifies the winning ticket.</li>
+    <li>A player can only claim a win before the next number is announced.</li>
+    <li>If multiple players win simultaneously, the prize is shared.</li>
+    <li>False claims are considered fouls.</li>
+    <li>The game ends when all numbers are drawn or all prizes are won.</li>
+  </ul>
+
+
+  <p-checkbox (onChange)="emitCheckedStatus($event)" [(ngModel)]="checked" [binary]="true" inputId="binary"
+              label="Do you agree with above rules of the game?"></p-checkbox>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Play Game" icon="pi pi-play" [disabled]="!checked"></p-button>
+    <p-button label="Cancel" icon="pi pi-times" styleClass="p-button-secondary"
+              [style]="{ 'margin-left': '.5em' }"></p-button>
+  </ng-template>
+</p-card>

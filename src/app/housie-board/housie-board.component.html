@@ -1,0 +1,46 @@
+<div class="row flex">
+  <div class="col-9 border-right-3 border-orange-500">
+    <h2 class="text-center">Housie Number Board</h2>
+    <div class="housie-board-wrapper">
+      <div class="w-full flex align-items-center justify-content-center p-4">
+        <div class="numbers-wrapper">
+          <div class="flex" *ngFor="let numRows of numbers; index as x;">
+            <div *ngFor="let num of numRows">
+              <div
+                class="box m-2 flex border-1 border-grey-3 border-bottom-none border-right-none align-items-center justify-content-center"
+                [ngClass]="{'num-selected': num.selected}">
+                {{num.number}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <h2 class="text-center">Housie Number Generator</h2>
+    <div class="number-generator-wrapper">
+      <p-card subheader="Generated Number will be shown below" styleClass="w-full h-screen text-center">
+        <div class="p-card-content flex align-items-center justify-content-center">
+          <div class="number-space my-3 flex align-items-center justify-content-center" id="generatedNumber">
+            <div class="housie-number">
+              {{housieNumber}}
+            </div>
+          </div>
+        </div>
+        remaining number: {{housieNumbersList.length}} -- button clicked: {{clickCount}}
+        <ng-template pTemplate="footer">
+          <button #generateNumberButton pButton type="button" label="Generate Number" class="w-full my-2"
+                  (click)="singleClickGenerateNumber()"></button>
+          <!--<button pButton="" type="button" label="Check Numbers" class="w-full" (click)="checkNumbers()"
+                  [disabled]="!enableCheck"></button>-->
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+</div>
+
+<div class="card flex justify-content-center">
+  <p-toast></p-toast>
+  <p-button (click)="checkNumbers()" icon="pi pi-info-circle" label="Show"></p-button>
+</div>
