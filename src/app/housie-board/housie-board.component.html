@@ -1,5 +1,5 @@
 <div class="row flex">
-  <div class="col-9 border-right-3 border-orange-500">
+  <div class="col-8 border-right-3 border-orange-500">
     <h2 class="text-center">Housie Number Board</h2>
     <div class="housie-board-wrapper">
       <div class="w-full flex align-items-center justify-content-center p-4">
@@ -17,30 +17,43 @@
       </div>
     </div>
   </div>
-  <div class="col-3">
+  <div class="col-4 max-h-full">
     <h2 class="text-center">Housie Number Generator</h2>
     <div class="number-generator-wrapper">
-      <p-card subheader="Generated Number will be shown below" styleClass="w-full h-screen text-center">
-        <div class="p-card-content flex align-items-center justify-content-center">
-          <div class="number-space my-3 flex align-items-center justify-content-center" id="generatedNumber">
-            <div class="housie-number">
-              {{housieNumber}}
-            </div>
-          </div>
-        </div>
-        remaining number: {{housieNumbersList.length}} -- button clicked: {{clickCount}}
-        <ng-template pTemplate="footer">
+      <p-card subheader="Generated Numbers will be shown below" styleClass="w-full text-center">
+
+        <!--        remaining number: {{housieNumbersList.length}} &#45;&#45; button clicked: {{clickCount}}-->
+        <ng-template pTemplate="header">
           <button #generateNumberButton pButton type="button" label="Generate Number" class="w-full my-2"
                   (click)="singleClickGenerateNumber()"></button>
           <!--<button pButton="" type="button" label="Check Numbers" class="w-full" (click)="checkNumbers()"
                   [disabled]="!enableCheck"></button>-->
         </ng-template>
+
+        <ng-template pTemplate="content">
+          <div class="flex align-items-center justify-content-center">
+            <div class="number-space my-3 flex align-items-center justify-content-center" id="generatedNumber">
+              <div class="housie-number">
+                {{housieNumber}}
+              </div>
+            </div>
+          </div>
+          <div class="marked-numbers-wrapper flex flex-wrap h-screen-30">
+            <div class="marked-numbers-box flex align-items-center justify-content-center m-3"
+                 *ngFor="let markedNumber of markedNumbers.slice().reverse()">
+              {{markedNumber}}
+            </div>
+          </div>
+        </ng-template>
+
       </p-card>
     </div>
   </div>
 </div>
 
+<!--
 <div class="card flex justify-content-center">
   <p-toast></p-toast>
   <p-button (click)="checkNumbers()" icon="pi pi-info-circle" label="Show"></p-button>
 </div>
+-->

@@ -1,8 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CheckNumbersComponent } from '../check-numbers/check-numbers.component';
-import { GenerateRandomNumberComponent } from '../generate-random-number/generate-random-number.component';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 
 @Component({
   selector   : 'app-housie-board',
@@ -11,21 +7,90 @@ import { GenerateRandomNumberComponent } from '../generate-random-number/generat
 })
 export class HousieBoardComponent implements OnInit, AfterViewInit {
 
-  numbers: any[]                                         = [];
-  housieNumber: number                                   = 0;
-  housieNumbersList: number[]                            = [];
-  voicesList: any                                        = [];
-  loaded: boolean                                        = false;
-  // IndianLanguages: any                                   = [];
-  selectedLanguageIndex: number                          = 0;
-  ref: DynamicDialogRef | undefined                      = undefined;
-  generateRandomNumbersRef: DynamicDialogRef | undefined = undefined;
-  @ViewChild('generateNumberButton', {static: false}) generateNumberButton: ElementRef | undefined;
 
-  constructor(public dialogService: DialogService, public messageService: MessageService) {
+  housieNumber: number                 = 0;
+  numbers: any[]                       = [];
+  housieNumbersList: number[]          = [];
+  voicesList: any                      = [];
+  loaded: boolean                      = false;
+  markedNumbers: number[]              = [];
+  IndianLanguages: any                 = [];
+  clickCount: number                   = 0;
+  generateNumberButtonClicked: boolean = false;
+
+  generateNumber() {
+    this.loaded               = false;
+    const randomIndex: number = Math.floor(Math.random() * this.housieNumbersList.length);
+
+    let displayRandomNumbers = setInterval(() => {
+      this.housieNumber = Math.floor(Math.random() * 90) + 1;
+    }, 50);
+
+    setTimeout(() => {
+
+      // initializing Speech Synthesis Utterance
+
+      let announceNumberInEnglish: SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
+
+      this.housieNumber = this.housieNumbersList[randomIndex];
+      this.housieNumbersList.splice(randomIndex, 1);
+
+      clearInterval(displayRandomNumbers);
+      this.updateMarkedNumbers();
+      if (this.housieNumbersList.length === 0) {
+        this.loaded = false;
+      }
+      this.clickCount++;
+      let announcementTextEnglish: string = '';
+      const splitNumbers: number[]        = this.housieNumber.toString().split('').map(Number);
+      this.markedNumbers.push(this.housieNumber);
+      console.log(splitNumbers);
+      if (splitNumbers.length !== 2) {
+        announcementTextEnglish += ' single digit ';
+      } else {
+        splitNumbers.forEach((num: number) => {
+          announcementTextEnglish += ` ${num} `;
+        });
+      }
+      announcementTextEnglish += `, ${this.housieNumber}`;
+      announceNumberInEnglish.text  = announcementTextEnglish;
+      announceNumberInEnglish.voice = this.voicesList[92];
+      window.speechSynthesis.speak(announceNumberInEnglish);
+
+      let announceNumberInHindi: SpeechSynthesisUtterance = new SpeechSynthesisUtterance();
+      let announcementTextHindi                           = '';
+      if (splitNumbers.length !== 2) {
+        announcementTextHindi += ' sirf';
+      } else {
+        splitNumbers.forEach((num: number) => {
+          announcementTextHindi += ` ${num} `;
+        });
+      }
+      announcementTextHindi += `, ${this.housieNumber}`;
+
+
+      announceNumberInHindi.voice = this.voicesList[157];
+      announceNumberInHindi.text  = announcementTextHindi;
+      window.speechSynthesis.speak(announceNumberInHindi);
+
+    }, 1000);
+
+    setTimeout(() => {
+      this.loaded                      = true;
+      this.generateNumberButtonClicked = false;
+      // this.ref.close({
+      //   housieNumber               : this.housieNumber,
+      //   housieNumbersList          : this.housieNumbersList,
+      //   markedNumbers              : this.markedNumbers,
+      //   loaded                     : this.loaded,
+      //   generateNumberButtonClicked: this.generateNumberButtonClicked
+      // });
+    }, 7000);
   }
 
   ngAfterViewInit(): void {
+    const windowVoices = window.speechSynthesis.getVoices();
+    console.log(windowVoices);
     let loadingVoices = setInterval(() => {
       console.log('loading voices...');
       // if (windowVoices.length > 1) {
@@ -36,23 +101,24 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
       }
     }, 100);
 
-    // setTimeout(() => {
-    //   console.log(this.voicesList);
-    //   let langIndex: number = 0;
-    //   this.voicesList.forEach((voice: any) => {
-    //     if (voice.lang.indexOf('IN') >= 0) {
-    //       this.IndianLanguages.push({
-    //         lang        : voice.lang,
-    //         name        : voice.name,
-    //         localService: voice.localService,
-    //         index       : langIndex
-    //       });
-    //     }
-    //     langIndex++;
-    //   });
-    //   this.loaded = true;
-    // }, 2000);
+    setTimeout(() => {
+      console.log(this.voicesList);
+      let langIndex: number = 0;
+      this.voicesList.forEach((voice: any) => {
+        if (voice.lang.indexOf('IN') >= 0) {
+          this.IndianLanguages.push({
+            lang        : voice.lang,
+            name        : voice.name,
+            localService: voice.localService,
+            index       : langIndex
+          });
+        }
+        langIndex++;
+      });
+      this.loaded = true;
+    }, 2000);
   }
+
 
   ngOnInit(): void {
     // This is the array of numbers that will be displayed on the housie board
@@ -80,49 +146,49 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
 
   }
 
-  selectedVoiceInput(e: any) {
-    console.log(e);
-    this.selectedLanguageIndex = e.value;
-  }
+  // selectedVoiceInput(e: any) {
+  //   console.log(e);
+  //   this.selectedLanguageIndex = e.value;
+  // }
 
-  markedNumbers: number[]              = [];
-  clickCount: number                   = 0;
-  generateNumberButtonClicked: boolean = false;
+  // markedNumbers: number[]              = [];
+  // clickCount: number                   = 0;
+  // generateNumberButtonClicked: boolean = false;
 
   singleClickGenerateNumber(): void {
     if (!this.generateNumberButtonClicked) {
       this.generateNumberButtonClicked = true;
-      // this.generateNumber();
-      this.generateRandomNumbersRef    = this.dialogService.open(GenerateRandomNumberComponent, {
-          header       : 'Generating Random Number!',
-          width        : '70%',
-          contentStyle : {overflow: 'auto'},
-          baseZIndex   : 10000,
-          maximizable  : false,
-          closable     : false,
-          closeOnEscape: false,
-          data         : {
-            housieNumbersList          : this.housieNumbersList,
-            markedNumbers              : this.markedNumbers,
-            loaded                     : this.loaded,
-            generateNumberButtonClicked: this.generateNumberButtonClicked
-          }
-        }
-      );
-
-      this.generateRandomNumbersRef.onClose.subscribe((data: any) => {
-        console.log('data on close', data);
-        if (data) {
-          this.housieNumber                = data.housieNumber;
-          this.housieNumbersList           = data.housieNumbersList;
-          this.markedNumbers               = data.markedNumbers;
-          this.loaded                      = data.loaded;
-          this.generateNumberButtonClicked = data.generateNumberButtonClicked;
-
-          this.updateMarkedNumbers();
-        }
-
-      });
+      this.generateNumber();
+      // this.generateRandomNumbersRef    = this.dialogService.open(GenerateRandomNumberComponent, {
+      //     header       : 'Generating Random Number!',
+      //     width        : '70%',
+      //     contentStyle : {overflow: 'auto'},
+      //     baseZIndex   : 10000,
+      //     maximizable  : false,
+      //     closable     : false,
+      //     closeOnEscape: false,
+      //     data         : {
+      //       housieNumbersList          : this.housieNumbersList,
+      //       markedNumbers              : this.markedNumbers,
+      //       loaded                     : this.loaded,
+      //       generateNumberButtonClicked: this.generateNumberButtonClicked
+      //     }
+      //   }
+      // );
+      //
+      // this.generateRandomNumbersRef.onClose.subscribe((data: any) => {
+      //   console.log('data on close', data);
+      //   if (data) {
+      //     this.housieNumber                = data.housieNumber;
+      //     this.housieNumbersList           = data.housieNumbersList;
+      //     this.markedNumbers               = data.markedNumbers;
+      //     this.loaded                      = data.loaded;
+      //     this.generateNumberButtonClicked = data.generateNumberButtonClicked;
+      //
+      //     this.updateMarkedNumbers();
+      //   }
+      //
+      // });
 
     } else {
       console.log('Button is already clicked');
@@ -137,7 +203,6 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
         }
       });
     });
-
     // this.announcementOfNumber();
   }
 
@@ -145,37 +210,5 @@ export class HousieBoardComponent implements OnInit, AfterViewInit {
   enableCheck: boolean     = true;
   showCheckDialog: boolean = false;
 
-  checkNumbers(): void {
-    this.enableCheck     = false;
-    this.showCheckDialog = true;
-
-    this.ref = this.dialogService.open(CheckNumbersComponent, {
-      header       : 'Check/Validate Numbers!',
-      width        : '70%',
-      contentStyle : {overflow: 'auto'},
-      baseZIndex   : 10000,
-      maximizable  : false,
-      closable     : true,
-      closeOnEscape: false,
-      data         : {
-        markedNumbers: this.markedNumbers
-      }
-
-    });
-
-    this.ref.onClose.subscribe(() => {
-      this.enableCheck = true;
-      this.messageService.add({severity: 'info', summary: 'Product Selected', detail: 'Closed'});
-    });
-
-    this.ref.onMaximize.subscribe((value) => {
-      this.messageService.add({severity: 'info', summary: 'Maximized', detail: `maximized: ${value.maximized}`});
-    });
-
-  }
-
-  closeCheckDialog(): void {
-    this.showCheckDialog = false;
-  }
 
 }

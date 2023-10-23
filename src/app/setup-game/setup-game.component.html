@@ -1,0 +1,117 @@
+<div class="setupgame-wrapper w-full">
+  <h1 class="text-center">Provide inputs to start the game</h1>
+  <div class="grid row">
+    <div class="col-4">
+      <div class="grid row">
+        <div class="col-6 border-right-3 border-gray-500">
+          <div class="p-inputgroup flex align-items-center justify-content-center">
+            <p-knob [(ngModel)]="singleTicketCost" [step]="5" [min]="0" [size]="200" [max]="50" id="ticketCost"
+                    [showValue]="true" (onChange)="setTicketCost($event)"></p-knob>
+          </div>
+        </div>
+        <div class="col-6 border-right-3 border-gray-500">
+          <div class="p-inputgroup flex align-items-center justify-content-center">
+            <p-knob [(ngModel)]="minimumTickets" [step]="1" [min]="0" [size]="200" [max]="maximumTickets"
+                    id="minimumTickets"
+                    [showValue]="true" (onChange)="setMinimumTickets($event)"></p-knob>
+          </div>
+        </div>
+      </div>
+      <div class="grid row">
+        <div class="col-6 border-right-3 border-gray-500">
+          <div class="p-inputgroup flex align-items-center justify-content-center">
+            <label class="font-bold text-xl text-gray-500" for="numberOfPlayers">Single Ticket Cost</label>
+          </div>
+        </div>
+        <div class="col-6 border-right-3 border-gray-500">
+          <div class="p-inputgroup flex align-items-center justify-content-center">
+            <label for="numberOfPlayers" class="font-bold text-xl text-gray-500">Minimum Tickets</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-4 border-right-3 border-gray-500">
+      <div class="p-inputgroup flex align-items-center justify-content-center">
+        <p-knob [(ngModel)]="totalPlayers" [min]="0" [step]="1" [size]="200" [max]="20" id="numberOfPlayers"
+                [showValue]="true" (onChange)="changeNumberOfPlayers($event)"></p-knob>
+      </div>
+      <div class="p-inputgroup flex align-items-center justify-content-center">
+        <label class="font-bold text-xl text-gray-500" for="numberOfPlayers">Provide number of Players for Housie
+          Game</label>
+      </div>
+    </div>
+    <div class="col-4 my-auto">
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">Total Amount</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{totalAmount}}</div>
+      </div>
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">Fast 5</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{fast5Prize}}</div>
+      </div>
+      <!--      <div class="grid row">-->
+      <!--        <div class="col-6 flex align-items-center justify-content-center"></div>-->
+      <!--        <div class="col-6 flex align-items-center justify-content-center"></div>-->
+      <!--      </div>-->
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">Total Single Lines / Single Line</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{linesPrize}} / {{singleLinePrize}}</div>
+      </div>
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">1<sup>st</sup> Housie</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{firstHousiePrize}}</div>
+      </div>
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">2<sup>nd</sup> Housie</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{secondHousiePrize}}</div>
+      </div>
+      <div class="grid row">
+        <div class="col-6 flex align-items-center justify-content-center">Remaining Amount</div>
+        <div class="col-6 flex align-items-center justify-content-center">{{remainingAmount}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="players-input-wrapper">
+    <form [formGroup]="playersForm" (ngSubmit)="startGame()">
+      <div formArrayName="playersFormArray">
+        <ol>
+          <li class="font-bold text-xl text-gray-500" *ngFor="let player of players.controls; let i = index"
+              [formGroupName]="i">
+            <div class="row flex align-items-center justify-content-center">
+              <div class="col-3">
+                <input id="numberOfTickets" type="text" pInputText placeholder="Player Name" formControlName="name">
+              </div>
+              <div class="col-1">
+                <div class="flex align-items-center justify-content-center">
+                  <label class="font-bold text-xl text-gray-500" for="numberOfTickets">Tickets </label>
+                </div>
+              </div>
+              <div class="col-2">
+                <p-knob formControlName="numberOfTickets" [step]="1" [size]="100" [max]="maximumTickets"
+                        [showValue]="true" (onChange)="changeNumberOfTickets($event, i)"></p-knob>
+              </div>
+              <div class="col-2">
+                <span class="text-xl text-red-500">
+                  ₹{{ player.get('amountForTickets')?.value }}
+                </span>
+              </div>
+              <div class="col-3">
+                <div class="card flex justify-content-center" *ngIf="totalPlayers > 2">
+                  <button pButton pRipple label="Delete Player" icon="pi pi-trash" (click)="removePlayer(i)"></button>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="mt-4">
+  <button pRipple pButton label="Add Player" (click)="addPlayer()" icon="pi pi-plus"></button>
+</div>
+
+<p-toast [position]="'top-center'"></p-toast>

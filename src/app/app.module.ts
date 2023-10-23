@@ -19,7 +19,9 @@ import { ToastModule } from 'primeng/toast';
 import { CheckNumbersComponent } from './check-numbers/check-numbers.component';
 import { MessageService } from 'primeng/api';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { GenerateRandomNumberComponent } from './generate-random-number/generate-random-number.component';
+import { SetupGameComponent } from './setup-game/setup-game.component';
+import { KnobModule } from 'primeng/knob';
+import { RippleModule } from 'primeng/ripple';
 
 @NgModule({
   declarations: [
@@ -27,9 +29,9 @@ import { GenerateRandomNumberComponent } from './generate-random-number/generate
     HousieBoardComponent,
     DashboardComponent,
     CheckNumbersComponent,
-    GenerateRandomNumberComponent
+    SetupGameComponent
   ],
-  imports     : [
+  imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
@@ -45,7 +47,8 @@ import { GenerateRandomNumberComponent } from './generate-random-number/generate
     DialogModule,
     DynamicDialogModule,
     ToastModule,
-
+    KnobModule,
+    RippleModule
   ],
   providers   : [DialogService, MessageService],
   bootstrap   : [AppComponent]

@@ -1,3 +1,5 @@
+@import url("../../app/app.component.scss");
+
 .housie-board-wrapper {
   .numbers-wrapper {
     .box {
@@ -19,16 +21,45 @@
 }
 
 .number-generator-wrapper {
-  .number-space {
-    height: 20em;
-    width: 20em;
-    border: 2px solid #2e55d5;
-    background-color: #d7af12;
-    border-radius: 50%;
-    .housie-number {
-      font-size: 10em;
+  .marked-numbers-wrapper {
+    overflow: auto;
+    scroll-behavior: smooth;
+
+    .marked-numbers-box {
+      height: 1.5em;
+      width: 1.5em;
+      border-right: 2px solid #2e55d5;
+      border-bottom: 2px solid #2e55d5;
+      background-color: #d7af12;
+      //border-radius: 50%;
+      font-size: 3em;
       font-weight: bolder;
       color: #2e55d5;
     }
+
+    .marked-numbers-box:first-child {
+      display: none !important;
+    }
+  }
+
+  .housie-number {
+    font-size: 1em;
+    font-weight: bolder;
+    color: #2e55d5;
+  }
+
+}
+
+.number-space {
+  height: 20em;
+  width: 20em;
+  border: 2px solid #2e55d5;
+  background-color: #d7af12;
+  border-radius: 50%;
+
+  .housie-number {
+    font-size: 10em;
+    font-weight: bolder;
+    color: #2e55d5;
   }
 }
